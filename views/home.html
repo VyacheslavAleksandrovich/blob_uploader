@@ -1,0 +1,10 @@
+{% extends "main.html" %}
+
+{% block maincontent %}
+<h1>Upload file</h1>
+<form action="{{upload_url}}" method="post" enctype="multipart/form-data">
+  Upload File: <input type="file" name="file"><br>
+  <input type="submit" name="submit" value="Submit">
+</form>
+
+{% endblock %}
