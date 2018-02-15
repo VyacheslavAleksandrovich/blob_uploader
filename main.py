@@ -142,7 +142,7 @@ class FileDownloadHandler(BaseHandler, blobstore_handlers.BlobstoreDownloadHandl
     if not blobstore.get(key):
       self.error(404)
     else:
-      self.send_blob(key, save_as=True)
+      self.send_blob(key)
 
 class SignupHandler(BaseHandler):
   def get(self):
