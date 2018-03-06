@@ -88,7 +88,7 @@ class BaseHandler(webapp2.RequestHandler):
             params = {}
         user = self.user_info
         params['user'] = user
-        path = os.path.join(os.path.dirname(__file__), 'views', view_filename)
+        path = os.path.join(os.path.dirname(__file__), 'templates', view_filename)
         self.response.out.write(template.render(path, params))
 
     def display_message(self, message):
