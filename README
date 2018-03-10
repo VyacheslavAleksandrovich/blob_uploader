@@ -1,0 +1,2 @@
+для использования cloudstorage необходимо инсталировать пакет GoogleAppEngineCloudStorageClient в корневую директорию lib, запустив в корне
+pip install -t lib GoogleAppEngineCloudStorageClient

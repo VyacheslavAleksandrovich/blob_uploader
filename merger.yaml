@@ -1,0 +1,13 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+service: merger
+
+handlers:
+- url: /.*
+  script: merger.application
+  login: admin
+
+libraries:
+- name: webapp2
+  version: "2.5.1"

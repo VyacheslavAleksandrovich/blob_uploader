@@ -5,6 +5,7 @@ from google.appengine.ext import ndb
 
 from webapp2_extras import security
 
+
 class User(webapp2_extras.appengine.auth.models.User):
     def set_password(self, raw_password):
         """Sets the password for the current user
@@ -34,3 +35,17 @@ class User(webapp2_extras.appengine.auth.models.User):
             return user, timestamp
 
         return None, None
+
+
+class UserFile(ndb.Model):
+    user = ndb.IntegerProperty()
+    blob_key = ndb.BlobKeyProperty()
+
+
+class UserFilePart(ndb.Model):
+    user = ndb.IntegerProperty()
+    blob_key = ndb.BlobKeyProperty()
+    part_num = ndb.IntegerProperty(indexed=True)
+    file_name = ndb.StringProperty()
+    task_id = ndb.StringProperty(indexed=True)
+    date = ndb.DateTimeProperty(auto_now_add=True, indexed=True)

@@ -3,6 +3,9 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+- url: /app/js
+  static_dir: app/js
+
 - url: /signup
   script: main.app
   secure: always
@@ -17,7 +20,6 @@ handlers:
 
 - url: .*
   script: main.app
-
 
 libraries:
 - name: webapp2

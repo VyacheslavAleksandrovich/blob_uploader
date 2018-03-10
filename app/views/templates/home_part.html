@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+
+{% block maincontent %}
+<h1>Upload file</h1>
+<form id="upload_form">
+  Upload File: <input type="file" name="file"><br>
+  <input type="submit" name="submit" value="Submit">
+</form>
+<script>
+  var form = document.getElementById('upload_form');
+  if (form.attachEvent) form.attachEvent("submit", handleSubmit);
+  else form.addEventListener("submit", handleSubmit);
+</script>
+
+{% endblock %}
