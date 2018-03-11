@@ -34,4 +34,4 @@ def send_download_url_gs(email_address, url):
                    to=to_,
                    subject='download url',
                    body=txt_)
-    logger.debug("mail msg: %s", txt_)
+    logger.debug("mail from: %s; to: %s; msg: %s;", from_, to_, txt_)
