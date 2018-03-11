@@ -12,8 +12,8 @@ from app.models import UserFilePart
 import logging
 
 logger = logging.getLogger('merger')
-#logger.setLevel(logging.WARNING)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 logger.addHandler(ch)
 
@@ -35,9 +35,14 @@ class MergeFile(webapp2.RequestHandler):
                       'w',
                       options={'x-goog-acl': 'public-read'},
                       retry_params=write_retry_params)
-        parts = list(UserFilePart.query(UserFilePart.task_id == task_id).order(UserFilePart.part_num).iter())
+        file_parts = UserFilePart.query(UserFilePart.task_id == task_id).order(UserFilePart.part_num).iter()
+        if file_parts is None:
+            logger.error("no file parts found.")
+            return
+        parts = list(file_parts)
         if len(parts) != number_batches:
             logger.error("number parts not eq.")
+            return
         for i, ufp in enumerate(parts):
             blob_reader = blobstore.BlobReader(ufp.blob_key, buffer_size=buffer_size)
             while True:
@@ -49,8 +54,9 @@ class MergeFile(webapp2.RequestHandler):
         #https://storage.googleapis.com/blob-uploader2.appspot.com/tags
         memcache.set(key=task_id, value=True)
         email_addr = memcache.get(key=(task_id + '_mail'))
-        blobstore_filename = '/gs{}'.format(file_name)
-        blob_key = blobstore.create_gs_key(blobstore_filename)
+        logger.debug("send mail to: " + email_addr)
+        #blobstore_filename = '/gs{}'.format(file_name)
+        #blob_key = blobstore.create_gs_key(blobstore_filename)
         #memcache.set(key=task_id+'_url', value=get_download_url(blob_key))
         memcache.set(key=task_id+'_url', value='https://storage.googleapis.com{}'.format(file_name))
         send_download_url_gs(email_addr, 'https://storage.googleapis.com{}'.format(file_name))
