@@ -6,6 +6,8 @@
   Upload File: <input type="file" name="file"><br>
   <input type="submit" name="submit" value="Submit">
 </form>
+<progress id="progress-bar" value="0"></progress>
+<a id="stage" href="#"></a>
 <script>
   var form = document.getElementById('upload_form');
   if (form.attachEvent) form.attachEvent("submit", handleSubmit);
