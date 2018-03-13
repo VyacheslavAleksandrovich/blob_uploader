@@ -8,7 +8,6 @@ import webapp2
 
 from app.models import UserFilePart
 
-
 import logging
 
 logger = logging.getLogger('merger')
@@ -21,8 +20,6 @@ logger.addHandler(ch)
 class MergeFile(webapp2.RequestHandler):
     def post(self):
         logger.debug("merge begin")
-        import time
-        time.sleep(3)
         file_name = self.request.get('file_name')
         number_batches = int(self.request.get('number_batches'))
         task_id = self.request.get('task_id')
@@ -36,6 +33,8 @@ class MergeFile(webapp2.RequestHandler):
                       options={'x-goog-acl': 'public-read'},
                       retry_params=write_retry_params)
         file_parts = UserFilePart.query(UserFilePart.task_id == task_id).order(UserFilePart.part_num).iter()
+        #print("test branch pickle begin")
+        #print(pickle.dumps(gcs_file))
         if file_parts is None:
             logger.error("no file parts found.")
             return
@@ -55,10 +54,10 @@ class MergeFile(webapp2.RequestHandler):
         memcache.set(key=task_id, value=True)
         email_addr = memcache.get(key=(task_id + '_mail'))
         logger.debug("send mail to: " + email_addr)
-        #blobstore_filename = '/gs{}'.format(file_name)
-        #blob_key = blobstore.create_gs_key(blobstore_filename)
-        #memcache.set(key=task_id+'_url', value=get_download_url(blob_key))
-        memcache.set(key=task_id+'_url', value='https://storage.googleapis.com{}'.format(file_name))
+        blobstore_filename = '/gs{}'.format(file_name)
+        blob_key = blobstore.create_gs_key(blobstore_filename)
+        memcache.set(key=task_id+'_url', value=get_download_url(blob_key))
+        #memcache.set(key=task_id+'_url', value='https://storage.googleapis.com{}'.format(file_name))
         send_download_url_gs(email_addr, 'https://storage.googleapis.com{}'.format(file_name))
 
 application = webapp2.WSGIApplication([
