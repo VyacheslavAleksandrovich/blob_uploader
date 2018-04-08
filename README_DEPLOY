@@ -1,3 +1,4 @@
 gcloud app deploy --project=PROJECT_NAME app.yaml worker.yaml
 dev_appserver.py -A main app.yaml merger.yaml --default_gcs_bucket_name=PROJECT_NAME.appspot.com
 gcloud datastore create-indexes --project=PROJECT_NAME index.yaml
+gcloud app logs tail --project=PROJECT_NAME -s default
