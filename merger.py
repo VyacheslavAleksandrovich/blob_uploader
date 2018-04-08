@@ -9,6 +9,9 @@ import webapp2
 from app.models import UserFilePart
 
 import logging
+from urllib import urlencode
+
+from google.appengine.ext.ndb.key import Key
 
 logger = logging.getLogger('merger')
 logger.setLevel(logging.WARNING)
@@ -24,13 +27,15 @@ class MergeFile(webapp2.RequestHandler):
         number_batches = int(self.request.get('number_batches'))
         task_id = self.request.get('task_id')
         buffer_size = 1048576
-        bucket_name = os.environ.get('BUCKET_NAME',
-                                     app_identity.get_default_gcs_bucket_name())
+        #bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+        bucket_name = 'pq-sp-dev-data'
+        #bucket_name = 'pq-sp-dev-data'
+        dir_path = 'raw_data'
         write_retry_params = gcs.RetryParams(backoff_factor=1.1)
-        file_name = '/' + bucket_name + '/' + file_name
-        gcs_file = gcs.open(file_name,
+        file_name_gs = '/' + bucket_name + '/' + dir_path + '/' + file_name if dir_path else '/' + bucket_name + '/' + file_name
+        gcs_file = gcs.open(file_name_gs,
                       'w',
-                      options={'x-goog-acl': 'public-read'},
+                      #options={'x-goog-acl': 'public-read'},
                       retry_params=write_retry_params)
         file_parts = UserFilePart.query(UserFilePart.task_id == task_id).order(UserFilePart.part_num).iter()
         #print("test branch pickle begin")
@@ -54,12 +59,21 @@ class MergeFile(webapp2.RequestHandler):
         memcache.set(key=task_id, value=True)
         email_addr = memcache.get(key=(task_id + '_mail'))
         logger.debug("send mail to: " + email_addr)
-        blobstore_filename = '/gs{}'.format(file_name)
-        blob_key = blobstore.create_gs_key(blobstore_filename)
-        memcache.set(key=task_id+'_url', value=get_download_url(blob_key))
+        #blobstore_filename = '/gs{}'.format(file_name)
+        #blob_key = blobstore.create_gs_key(blobstore_filename)
+        #print(blob_key)
+        #print(type(blob_key))
+        #data = blobstore.fetch_data(blob_key, 0, 6)
+        #print('fetching data', data)
+        #memcache.set(key=task_id+'_url', value=get_download_url(str(blob_key)))
+        print('file_name_gs: ', file_name_gs)
+        url_params = {'file_name': file_name, 'file_name_gs': '/gs'+ file_name_gs}
+        memcache.set(key=task_id+'_url', value='/gsn/?'+ urlencode(url_params))
         #memcache.set(key=task_id+'_url', value='https://storage.googleapis.com{}'.format(file_name))
         send_download_url_gs(email_addr, 'https://storage.googleapis.com{}'.format(file_name))
 
 application = webapp2.WSGIApplication([
     ('/merge_start', MergeFile)
 ], debug=True)
+
+#test

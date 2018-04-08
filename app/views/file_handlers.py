@@ -4,6 +4,8 @@ from google.appengine.api import taskqueue, memcache
 
 import logging
 import json
+from base64 import decodestring
+from urllib import unquote
 
 from .base_handler import BaseHandler, user_required
 from ..models import UserFile, UserFilePart
@@ -112,3 +114,44 @@ class FileDownloadHandler(BaseHandler, blobstore_handlers.BlobstoreDownloadHandl
         else:
             self.send_blob(blobstore.BlobInfo.get(key),
                            save_as=True)
+
+
+#class FileDownloadHandlerGS(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+#    @user_required
+#    def get(self, *args, **kwargs):
+#        file_name = kwargs['file_name']
+#        bucket_name = kwargs['bucket']
+#        file_name_gs = '/' + bucket_name + '/' + file_name
+#        blobstore_filename = '/gs{}'.format(file_name_gs)
+#        blob_key = blobstore.create_gs_key(blobstore_filename)
+#        print('blob_key: ', blob_key)
+#        #print(blob_key)
+#        #print(type(blob_key))
+#        #data = blobstore.fetch_data(blob_key, 0, 6)
+#        #print('fetching data', data)
+#        self.send_blob(blob_key,
+#                       save_as=file_name)
+
+
+class FileDownloadHandlerGSN(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    @user_required
+    def get(self, *args, **kwargs):
+        file_name = self.request.get('file_name')
+        file_name_gs = self.request.get('file_name_gs')
+        blob_key = blobstore.create_gs_key(file_name_gs)
+        print('blob_key: ', blob_key)
+        self.send_blob(blob_key,
+                       save_as=file_name)
+
+
+
+
+
+
+
+
+
+
+
+
+
