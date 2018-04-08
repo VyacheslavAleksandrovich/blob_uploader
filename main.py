@@ -9,7 +9,7 @@ from app.views.base_handler import BaseHandler, user_required
 from app.views.auth_views import SignupHandler, VerificationHandler, SetPasswordHandler, LoginHandler
 from app.views.auth_views import LogoutHandler, ForgotPasswordHandler
 from app.views.file_handlers import FileDownloadHandler, FileUploadHandler, FilePartUploadHandler, \
-    UploadURL, MergeFile, MergeIsDone, DownloadURL
+    UploadURL, MergeFile, MergeIsDone, DownloadURL, FileDownloadHandlerGSN
 
 logger = logging.getLogger('blob_app')
 logger.setLevel(logging.WARNING)
@@ -58,6 +58,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/merge_is_done/<task_id:.+>', MergeIsDone),
     ('/upload_url', UploadURL),
     webapp2.Route('/download_url/<task_id:.+>', DownloadURL),
+    #webapp2.Route('/gs/<bucket:.+>/<file_name:.+>', FileDownloadHandlerGS),
+    webapp2.Route('/gsn/', FileDownloadHandlerGSN),
     ('/download/([^/]+)?', FileDownloadHandler)
 ], debug=True, config=config)
 
